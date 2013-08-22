@@ -1,0 +1,4 @@
+SUBDIRS = src
+CURRENTPATH=$(shell pwd)
+INCLUDES=-I$(CURRENTPATH)/include
+export INCLUDES
