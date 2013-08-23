@@ -6,8 +6,8 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
+
 #include "pcs.h"
-#include "pcs_conn.h"
 
 #define ARG_FORMAT "a:r:h"
 
@@ -68,7 +68,7 @@ int main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 	parse_arg(argc, argv);
-	refresh_token();
+	pcs_get_quota();
 	free(conf);
 	return 0;
 }

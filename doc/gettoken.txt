@@ -1,0 +1,2 @@
+https://openapi.baidu.com/oauth/2.0/authorize?response_type=code&client_id=GLyCkBENOkwPeVxqBC1rkLQ4&redirect_uri=oob&display=popup&scope=netdisk
+https://openapi.baidu.com/oauth/2.0/token?grant_type=authorization_code&code=ANXxSNjwQDugOnqeikRMu2bKaXCdlLxn&client_id=GLyCkBENOkwPeVxqBC1rkLQ4&client_secret=G4B3gNPBAyELN0K8qkTYWKfEktv9S6Gr&redirect_uri=oob&scope=netdisk
