@@ -22,6 +22,8 @@ AC_TYPE_SIZE_T
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 LIBCURL_CHECK_CONFIG 
+PKG_CHECK_MODULES(JSON, json, [LIBS="$LIBS $JSON_LIBS" CFLAGS="$CFLAGS $JSON_CFLAGS"], AC_MSG_ERROR(Cannot find JSON: Is json-config in path?))
+
 
 AC_CONFIG_FILES([Makefile
                  src/Makefile])

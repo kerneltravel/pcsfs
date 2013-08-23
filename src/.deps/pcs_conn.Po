@@ -52,7 +52,15 @@ pcs_conn.o: pcs_conn.c /usr/include/stdlib.h /usr/include/features.h \
  /usr/include/x86_64-linux-gnu/bits/posix2_lim.h \
  /usr/include/x86_64-linux-gnu/sys/time.h /usr/include/curl/easy.h \
  /usr/include/curl/multi.h /usr/include/curl/curl.h \
- /usr/include/curl/typecheck-gcc.h \
+ /usr/include/curl/typecheck-gcc.h /usr/include/json/json.h \
+ /usr/include/json/bits.h /usr/include/json/debug.h \
+ /usr/include/json/linkhash.h /usr/include/json/json_object.h \
+ /usr/include/json/json_inttypes.h /usr/include/json/json_config.h \
+ /usr/include/inttypes.h \
+ /usr/lib/gcc/x86_64-linux-gnu/4.7/include/stdint.h /usr/include/stdint.h \
+ /usr/include/x86_64-linux-gnu/bits/wchar.h /usr/include/json/arraylist.h \
+ /usr/include/json/json_util.h /usr/include/json/json_tokener.h \
+ /usr/include/json/json_object_iterator.h \
  /home/liuchuanyu/workspace/pcsfs/include/pcs.h \
  /home/liuchuanyu/workspace/pcsfs/include/pcs_conn.h
 
@@ -195,6 +203,36 @@ pcs_conn.o: pcs_conn.c /usr/include/stdlib.h /usr/include/features.h \
 /usr/include/curl/curl.h:
 
 /usr/include/curl/typecheck-gcc.h:
+
+/usr/include/json/json.h:
+
+/usr/include/json/bits.h:
+
+/usr/include/json/debug.h:
+
+/usr/include/json/linkhash.h:
+
+/usr/include/json/json_object.h:
+
+/usr/include/json/json_inttypes.h:
+
+/usr/include/json/json_config.h:
+
+/usr/include/inttypes.h:
+
+/usr/lib/gcc/x86_64-linux-gnu/4.7/include/stdint.h:
+
+/usr/include/stdint.h:
+
+/usr/include/x86_64-linux-gnu/bits/wchar.h:
+
+/usr/include/json/arraylist.h:
+
+/usr/include/json/json_util.h:
+
+/usr/include/json/json_tokener.h:
+
+/usr/include/json/json_object_iterator.h:
 
 /home/liuchuanyu/workspace/pcsfs/include/pcs.h:
 

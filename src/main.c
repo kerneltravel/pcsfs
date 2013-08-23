@@ -32,10 +32,10 @@ static void parse_arg(int argc, char **argv)
 	while ((ch = getopt(argc, argv, ARG_FORMAT)) != -1) {
 		switch (ch) {
 		case 'a':
-			conf->access_token = optarg;
+			conf->access_token = strdup(optarg);
 			break;
 		case 'r':
-			conf->refresh_token = optarg;
+			conf->refresh_token = strdup(optarg);
 			break;
 		case 'h':
 			usage(argv[0], EXIT_SUCCESS);

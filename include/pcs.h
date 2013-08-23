@@ -5,10 +5,9 @@
 
 struct pcs_t
 {
-	char *server_url;
-	char *access_token;
-	char *refresh_token;
-	char *mount_point;
+	const char *access_token;
+	const char *refresh_token;
+	const char *mount_point;
 };
 
 int refresh_token();
