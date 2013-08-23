@@ -40,7 +40,8 @@ main.o: main.c /usr/include/stdio.h /usr/include/features.h \
  /usr/include/x86_64-linux-gnu/bits/errno.h /usr/include/linux/errno.h \
  /usr/include/x86_64-linux-gnu/asm/errno.h \
  /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
- /home/liuchuanyu/workspace/pcsfs/include/pcs.h
+ /home/liuchuanyu/workspace/pcsfs/include/pcs.h \
+ /home/liuchuanyu/workspace/pcsfs/include/pcs_conn.h
 
 /usr/include/stdio.h:
 
@@ -157,3 +158,5 @@ main.o: main.c /usr/include/stdio.h /usr/include/features.h \
 /usr/include/asm-generic/errno-base.h:
 
 /home/liuchuanyu/workspace/pcsfs/include/pcs.h:
+
+/home/liuchuanyu/workspace/pcsfs/include/pcs_conn.h:

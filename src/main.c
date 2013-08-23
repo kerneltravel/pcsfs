@@ -7,14 +7,17 @@
 #include <string.h>
 #include <errno.h>
 #include "pcs.h"
+#include "pcs_conn.h"
 
 #define ARG_FORMAT "a:r:h"
 
-struct pcs_t* conf = NULL;
+struct pcs_t *conf = NULL;
 
-static void usage(char* argv0, int status){
-	fprintf(stderr, "usage: %s -a access_token -r refresh_token mountpoint\n", 
-			argv0);
+static void usage(char *argv0, int status)
+{
+	fprintf(stderr,
+		"usage: %s -a access_token -r refresh_token mountpoint\n",
+		argv0);
 	free(conf);
 	exit(status);
 }
@@ -23,28 +26,28 @@ static void parse_arg(int argc, char **argv)
 {
 	extern int optind;
 	int ch;
-	if(argc < 3){
+	if (argc < 3) {
 		usage(argv[0], EXIT_FAILURE);
 	}
-	while((ch = getopt(argc, argv, ARG_FORMAT)) != -1){
-		switch(ch){
-			case 'a' :
-				conf->access_token = optarg;
-				break;
-			case 'r' :
-				conf->refresh_token = optarg;
-				break;
-			case 'h':
-				usage(argv[0], EXIT_SUCCESS);
-				break;
-			default:
-				usage(argv[0], EXIT_FAILURE);
+	while ((ch = getopt(argc, argv, ARG_FORMAT)) != -1) {
+		switch (ch) {
+		case 'a':
+			conf->access_token = optarg;
+			break;
+		case 'r':
+			conf->refresh_token = optarg;
+			break;
+		case 'h':
+			usage(argv[0], EXIT_SUCCESS);
+			break;
+		default:
+			usage(argv[0], EXIT_FAILURE);
 		}
 	}
-	if(!conf->access_token || !conf->refresh_token){
+	if (!conf->access_token || !conf->refresh_token) {
 		usage(argv[0], EXIT_FAILURE);
 	}
-	if(argc - optind != 1){
+	if (argc - optind != 1) {
 		usage(argv[0], EXIT_FAILURE);
 	}
 	conf->mount_point = argv[optind];
@@ -60,11 +63,12 @@ int main(int argc, char **argv)
 	}
 */
 	conf = calloc(1, sizeof(struct pcs_t));
-	if(!conf){
+	if (!conf) {
 		perror("no memory!\n");
 		exit(EXIT_FAILURE);
 	}
 	parse_arg(argc, argv);
+	refresh_token();
 	free(conf);
 	return 0;
 }

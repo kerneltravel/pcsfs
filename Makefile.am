@@ -1,4 +1,4 @@
 SUBDIRS = src
-CURRENTPATH=$(shell pwd)
+CURRENTPATH=$(PWD)
 INCLUDES=-I$(CURRENTPATH)/include
 export INCLUDES
