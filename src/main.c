@@ -68,7 +68,7 @@ int main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 	parse_arg(argc, argv);
-	pcs_get_quota();
+	pcs_stat("/apps/fuse_pcs/test");
 	free(conf);
 	return 0;
 }

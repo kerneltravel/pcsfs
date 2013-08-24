@@ -5,6 +5,7 @@
 #include <json.h>
 
 #define URL_MAXLEN 1024
+#define PATH_MAXLEN 1024
 #define MAX_RETRY_TIMES 3
 
 #define ERROR_INVALID_ACCESS_TOKEN 110
@@ -13,7 +14,10 @@
 #define PCS_CLIENT_SECRET "G4B3gNPBAyELN0K8qkTYWKfEktv9S6Gr"
 #define PCS_REFRESH_TOKEN "https://openapi.baidu.com/oauth/2.0/token"
 #define PCS_GET_QUOTA "https://pcs.baidu.com/rest/2.0/pcs/quota"
-#define PCS_GET_FILE_INFO "https://pcs.baidu.com/rest/2.0/pcs/file"
+#define PCS_FILE_OP "https://pcs.baidu.com/rest/2.0/pcs/file"
+
+#define PCS_FILE_OP_MKDIR "mkdir"
+#define PCS_FILE_OP_STAT "meta"
 
 
 #define ERROR_CODE_KEY "error_code"
@@ -21,6 +25,12 @@
 #define REFRESH_TOKEN_KEY "refresh_token"
 #define QUOTA_QUOTA_KEY "quota"
 #define QUOTA_USED_KEY "used"
+#define META_PATH_KEY "path"
+#define META_CTIME_KEY "ctime"
+#define META_MTIME_KEY "mtime"
+#define META_SIZE_KEY "size"
+#define META_ISDIR_KEY "isdir"
+#define META_HASSUBDIR_KEY "ifhassubdir"
 
 struct pcs_t
 {
@@ -41,13 +51,29 @@ struct pcs_quota_t
 	size_t total;
 };
 
+struct pcs_stat_t
+{
+	char path[PATH_MAXLEN];
+	unsigned int ctime;
+	unsigned int mtime;
+	size_t size;
+	char isdir;
+	char hassubdir;
+};
+
 
 extern struct pcs_t *conf;
 
-int pcs_refresh_token(void);
 size_t pcs_write_callback(void *contents, size_t size, size_t nmemb, void * userp);
+
 char* get_json_str(struct json_object *jobj, const char *key);
-struct pcs_quota_t* pcs_get_quota(void);
 size_t get_json_size_t(struct json_object *jobj, const char *key);
-size_t get_json_int(struct json_object *jobj, const char *key);
+int get_json_int(struct json_object *jobj, const char *key);
+unsigned int get_json_uint(struct json_object *jobj, const char *key);
+
+int pcs_refresh_token(void);
+struct pcs_quota_t* pcs_get_quota(void);
+int pcs_mkdir(char *path);
+struct pcs_stat_t *pcs_stat(char *path);
+
 #endif

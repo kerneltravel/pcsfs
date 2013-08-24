@@ -37,7 +37,7 @@ REQUEST:
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&buf);
 		res = curl_easy_perform(curl);
 		if(res != CURLE_OK){
-			fprintf(stderr, "refresh token error: %s\n", 
+			fprintf(stderr, "get quota error: %s\n", 
 					curl_easy_strerror(res));
 		}
 		printf("%s\n", buf.buf);

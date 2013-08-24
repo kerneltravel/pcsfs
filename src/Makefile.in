@@ -63,7 +63,7 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_pcsfs_OBJECTS = main.$(OBJEXT) pcs_refresh_token.$(OBJEXT) \
-	pcs_get_file_info.$(OBJEXT) pcs_get_quota.$(OBJEXT) \
+	pcs_file_op.$(OBJEXT) pcs_get_quota.$(OBJEXT) \
 	pcs_curl.$(OBJEXT) pcs_json.$(OBJEXT)
 pcsfs_OBJECTS = $(am_pcsfs_OBJECTS)
 pcsfs_DEPENDENCIES =
@@ -180,7 +180,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 pcsfs_LDADD = @LIBCURL@
-pcsfs_SOURCES = main.c pcs_refresh_token.c pcs_get_file_info.c pcs_get_quota.c pcs_curl.c pcs_json.c
+pcsfs_SOURCES = main.c pcs_refresh_token.c pcs_file_op.c pcs_get_quota.c pcs_curl.c pcs_json.c
 all: all-am
 
 .SUFFIXES:
@@ -267,7 +267,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pcs_curl.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pcs_get_file_info.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pcs_file_op.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pcs_get_quota.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pcs_json.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pcs_refresh_token.Po@am__quote@

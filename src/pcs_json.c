@@ -40,3 +40,16 @@ int get_json_int(struct json_object *jobj, const char *key)
 		return 0;
 	}
 }
+
+unsigned int get_json_uint(struct json_object *jobj, const char *key)
+{
+	struct json_object *tmp;
+	tmp = json_object_object_get(jobj, key);
+	if(tmp){
+		unsigned int ret = (unsigned int)json_object_get_int64(tmp);
+		json_object_put(tmp);
+		return ret;
+	}else{
+		return 0;
+	}
+}
