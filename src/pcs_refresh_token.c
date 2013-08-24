@@ -25,7 +25,7 @@ int pcs_refresh_token(void)
 			PCS_CLIENT_SECRET);
 	curl = curl_easy_init();
 	if(curl){
-
+		int ret;
 		curl_easy_setopt(curl, CURLOPT_URL, url);
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, pcs_write_callback);
@@ -45,7 +45,9 @@ int pcs_refresh_token(void)
 		}
 #endif
 		free(url);
-		return parse_json_result(buf.buf);
+		ret = parse_json_result(buf.buf);
+		free(buf.buf);
+		return ret;
 	}else{
 		free(url);
 		perror("curl init error!\n");
@@ -58,6 +60,7 @@ static int parse_json_result(const char* result)
 	struct json_object *result_obj;
 
 	result_obj = json_tokener_parse(result);
+
 	if (!result_obj){
 		perror("parse json object error!\n");
 		return 1;
