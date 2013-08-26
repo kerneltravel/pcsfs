@@ -68,7 +68,11 @@ int main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 	parse_arg(argc, argv);
-	pcs_stat("/apps/fuse_pcs/test");
+	{
+		struct pcs_stat_t *st;
+		size_t nmemb;
+		pcs_lsdir("/apps/fuse_pcs/test", &st, &nmemb);
+	}
 	free(conf);
 	return 0;
 }

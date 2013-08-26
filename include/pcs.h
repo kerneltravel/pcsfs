@@ -18,7 +18,7 @@
 
 #define PCS_FILE_OP_MKDIR "mkdir"
 #define PCS_FILE_OP_STAT "meta"
-
+#define PCS_FILE_OP_LIST "list"
 
 #define ERROR_CODE_KEY "error_code"
 #define ACCESS_TOKEN_KEY "access_token"
@@ -53,6 +53,7 @@ struct pcs_quota_t
 
 struct pcs_stat_t
 {
+	struct list_head *list;
 	char path[PATH_MAXLEN];
 	unsigned int ctime;
 	unsigned int mtime;
@@ -74,6 +75,7 @@ unsigned int get_json_uint(struct json_object *jobj, const char *key);
 int pcs_refresh_token(void);
 struct pcs_quota_t* pcs_get_quota(void);
 int pcs_mkdir(char *path);
-struct pcs_stat_t *pcs_stat(char *path);
+int pcs_stat(char *path, struct pcs_stat_t *st);
+int pcs_lsdir(char *path, struct pcs_stat_t **st, size_t* nmemb);
 
 #endif

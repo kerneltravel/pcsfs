@@ -43,7 +43,7 @@
 /* #undef LIBCURL_FEATURE_ASYNCHDNS */
 
 /* Defined if libcurl supports IDN */
-/* #undef LIBCURL_FEATURE_IDN */
+#define LIBCURL_FEATURE_IDN 1
 
 /* Defined if libcurl supports IPv6 */
 #define LIBCURL_FEATURE_IPV6 1
