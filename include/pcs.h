@@ -83,9 +83,9 @@ int pcs_stat(const char *path, struct pcs_stat_t *st);
 int pcs_lsdir(const char *path, struct pcs_stat_t **st, size_t* nmemb);
 int pcs_mv(const char *from, const char *to);
 
-int pcs_getattr(const char *path, struct stat *stbuf);
-int pcs_opendir(const char *path, struct fuse_file_info *fi);
-int pcs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, 
+int pcsfs_getattr(const char *path, struct stat *stbuf);
+int pcsfs_opendir(const char *path, struct fuse_file_info *fi);
+int pcsfs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, 
 		off_t offset, struct fuse_file_info *fi);
-
+int pcsfs_mkdir(const char *path, mode_t mode);
 #endif

@@ -14,11 +14,11 @@
 
 struct pcs_t conf;
 
-static struct fuse_operations pcs_handler = {
-	.getattr	= pcs_getattr,
-	.opendir	= pcs_opendir,
-	.readdir	= pcs_readdir,
-	.mkdir		= NULL,
+static struct fuse_operations pcsfs_handler = {
+	.getattr	= pcsfs_getattr,
+	.opendir	= pcsfs_opendir,
+	.readdir	= pcsfs_readdir,
+	.mkdir		= pcsfs_mkdir,
 	.unlink		= NULL,
 	.rmdir		= NULL,
 	.rename		= NULL,
@@ -79,5 +79,5 @@ int main(int argc, char **argv)
 	parse_arg(argc, argv);
 	fuse_opt_add_arg(&fargs, argv[0]);
 	fuse_opt_add_arg(&fargs, conf.mount_point);
-	return fuse_main(fargs.argc, fargs.argv, &pcs_handler, NULL);
+	return fuse_main(fargs.argc, fargs.argv, &pcsfs_handler, NULL);
 }

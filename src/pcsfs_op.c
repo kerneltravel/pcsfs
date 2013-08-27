@@ -5,7 +5,7 @@
 #include <fcntl.h>
 #include "pcs.h"
 
-int pcs_getattr(const char *path, struct stat *stbuf)
+int pcsfs_getattr(const char *path, struct stat *stbuf)
 {
 	int res = 0;
 	
@@ -36,7 +36,7 @@ int pcs_getattr(const char *path, struct stat *stbuf)
 	return res;
 }
 
-int pcs_opendir(const char *path, struct fuse_file_info *fi)
+int pcsfs_opendir(const char *path, struct fuse_file_info *fi)
 {
 	char pcs_path[URL_MAXLEN];
 	struct pcs_stat_t st;
@@ -52,7 +52,7 @@ int pcs_opendir(const char *path, struct fuse_file_info *fi)
 	}
 }
 
-int pcs_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
+int pcsfs_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
 		off_t offset, struct fuse_file_info *fi)
 {
 	char pcs_path[URL_MAXLEN];
@@ -85,4 +85,11 @@ int pcs_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
 	}
 	free(pcs_st);
 	return 0;
+}
+
+int pcsfs_mkdir(const char *path, mode_t mode)
+{
+	char pcs_path[URL_MAXLEN];
+	snprintf(pcs_path, URL_MAXLEN, "%s%s", PCS_PATH_PREFIX, path);
+	return pcs_mkdir(pcs_path);
 }
