@@ -15,21 +15,17 @@
 struct pcs_t conf;
 
 static struct fuse_operations pcsfs_handler = {
-	.getattr	= pcsfs_getattr,
-	.opendir	= pcsfs_opendir,
-	.readdir	= pcsfs_readdir,
-	.mkdir		= pcsfs_mkdir,
-	.unlink		= pcsfs_unlink,
-	.rmdir		= pcsfs_rmdir,
-	.rename		= pcsfs_rename,
-	.link		= NULL,
-	.truncate	= NULL,
-	.create		= NULL,
-	.open		= NULL,
-	.read		= NULL,
-	.write		= NULL,
-	.flush		= NULL,
-	.release	= NULL,
+	.getattr = pcsfs_getattr,
+	.opendir = pcsfs_opendir,
+	.readdir = pcsfs_readdir,
+	.mkdir = pcsfs_mkdir,
+	.unlink = pcsfs_unlink,
+	.rmdir = pcsfs_rmdir,
+	.rename = pcsfs_rename,
+	.statfs = pcsfs_statfs,
+	.open = NULL,
+	.read = NULL,
+	.write = NULL,
 };
 
 static void usage(char *argv0, int status)

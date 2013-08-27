@@ -78,7 +78,7 @@ int get_json_int(struct json_object *jobj, const char *key);
 unsigned int get_json_uint(struct json_object *jobj, const char *key);
 
 int pcs_refresh_token(void);
-struct pcs_quota_t* pcs_get_quota(void);
+int pcs_get_quota(struct pcs_quota_t *quota);
 int pcs_mkdir(const char *path);
 int pcs_stat(const char *path, struct pcs_stat_t *st);
 int pcs_lsdir(const char *path, struct pcs_stat_t **st, size_t* nmemb);
@@ -93,4 +93,5 @@ int pcsfs_mkdir(const char *path, mode_t mode);
 int pcsfs_unlink(const char *path);
 int pcsfs_rmdir(const char *path);
 int pcsfs_rename(const char *from, const char *to);
+int pcsfs_statfs(const char *path, struct statvfs *stvfs);
 #endif

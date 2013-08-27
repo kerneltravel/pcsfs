@@ -8,24 +8,24 @@
 int pcsfs_getattr(const char *path, struct stat *stbuf)
 {
 	int res = 0;
-	
+
 	memset(stbuf, 0, sizeof(struct stat));
 	if (strcmp(path, "/") == 0) {
 		stbuf->st_mode = S_IFDIR | 0755;
 		stbuf->st_nlink = 2;
-	} else{
+	} else {
 		char pcs_path[URL_MAXLEN];
 		struct pcs_stat_t st;
 		int ret;
 		snprintf(pcs_path, URL_MAXLEN, "%s%s", PCS_PATH_PREFIX, path);
 		memset(&st, 0, sizeof(struct pcs_stat_t));
 		ret = pcs_stat(pcs_path, &st);
-		if(ret){
+		if (ret) {
 			res = -ENOENT;
-		}else{
-			if(st.isdir){
+		} else {
+			if (st.isdir) {
 				stbuf->st_mode = S_IFDIR | 0755;
-			}else{
+			} else {
 				stbuf->st_mode = S_IFREG | 0644;
 			}
 			stbuf->st_size = st.size;
@@ -41,41 +41,41 @@ int pcsfs_opendir(const char *path, struct fuse_file_info *fi)
 	char pcs_path[URL_MAXLEN];
 	struct pcs_stat_t st;
 	int ret;
-	
+
 	snprintf(pcs_path, URL_MAXLEN, "%s%s", PCS_PATH_PREFIX, path);
 	memset(&st, 0, sizeof(struct pcs_stat_t));
 	ret = pcs_stat(pcs_path, &st);
-	if(ret){
+	if (ret) {
 		return -ENOENT;
-	}else{	
+	} else {
 		return 0;
 	}
 }
 
 int pcsfs_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
-		off_t offset, struct fuse_file_info *fi)
+		  off_t offset, struct fuse_file_info *fi)
 {
 	char pcs_path[URL_MAXLEN];
 	struct pcs_stat_t *pcs_st;
 	size_t nmemb;
 	int ret;
 	int i;
-	
+
 	snprintf(pcs_path, URL_MAXLEN, "%s%s", PCS_PATH_PREFIX, path);
 	ret = pcs_lsdir(pcs_path, &pcs_st, &nmemb);
-	if(ret){
+	if (ret) {
 		return -ENOENT;
 	}
 	filler(buf, ".", NULL, 0);
 	filler(buf, "..", NULL, 0);
-	for(i = 0; i < nmemb; i ++){
+	for (i = 0; i < nmemb; i++) {
 		char *filename;
 		struct stat st;
 		memset(&st, 0, sizeof(st));
 		filename = strrchr(pcs_st[i].path, '/') + 1;
-		if(pcs_st[i].isdir){
+		if (pcs_st[i].isdir) {
 			st.st_mode = S_IFDIR | 0755;
-		}else{
+		} else {
 			st.st_mode = S_IFREG | 0644;
 		}
 		st.st_size = pcs_st[i].size;
@@ -93,7 +93,6 @@ int pcsfs_mkdir(const char *path, mode_t mode)
 	snprintf(pcs_path, URL_MAXLEN, "%s%s", PCS_PATH_PREFIX, path);
 	return pcs_mkdir(pcs_path);
 }
-
 
 int pcsfs_unlink(const char *path)
 {
@@ -115,4 +114,21 @@ int pcsfs_rename(const char *from, const char *to)
 	snprintf(pcs_from, URL_MAXLEN, "%s%s", PCS_PATH_PREFIX, from);
 	snprintf(pcs_to, URL_MAXLEN, "%s%s", PCS_PATH_PREFIX, to);
 	return pcs_mv(pcs_from, pcs_to);
+}
+
+int pcsfs_statfs(const char *path, struct statvfs *stvfs)
+{
+	int ret;
+	struct pcs_quota_t quota;
+
+	ret = pcs_get_quota(&quota);
+	if (ret) {
+		return 1;
+	}
+
+	stvfs->f_bsize = 1;
+	stvfs->f_frsize = 1;
+	stvfs->f_blocks = quota.total;
+	stvfs->f_bfree = quota.total - quota.used;
+	return 0;
 }
