@@ -93,3 +93,18 @@ int pcsfs_mkdir(const char *path, mode_t mode)
 	snprintf(pcs_path, URL_MAXLEN, "%s%s", PCS_PATH_PREFIX, path);
 	return pcs_mkdir(pcs_path);
 }
+
+
+int pcsfs_unlink(const char *path)
+{
+	char pcs_path[URL_MAXLEN];
+	snprintf(pcs_path, URL_MAXLEN, "%s%s", PCS_PATH_PREFIX, path);
+	return pcs_rm(pcs_path);
+}
+
+int pcsfs_rmdir(const char *path)
+{
+	char pcs_path[URL_MAXLEN];
+	snprintf(pcs_path, URL_MAXLEN, "%s%s", PCS_PATH_PREFIX, path);
+	return pcs_rm(pcs_path);
+}

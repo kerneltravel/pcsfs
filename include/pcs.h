@@ -22,6 +22,7 @@
 #define PCS_FILE_OP_STAT "meta"
 #define PCS_FILE_OP_LIST "list"
 #define PCS_FILE_OP_MOVE "move"
+#define PCS_FILE_OP_DELETE "delete"
 
 #define ERROR_CODE_KEY "error_code"
 #define ACCESS_TOKEN_KEY "access_token"
@@ -82,10 +83,14 @@ int pcs_mkdir(const char *path);
 int pcs_stat(const char *path, struct pcs_stat_t *st);
 int pcs_lsdir(const char *path, struct pcs_stat_t **st, size_t* nmemb);
 int pcs_mv(const char *from, const char *to);
+int pcs_rm(const char *path);
 
 int pcsfs_getattr(const char *path, struct stat *stbuf);
 int pcsfs_opendir(const char *path, struct fuse_file_info *fi);
 int pcsfs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, 
 		off_t offset, struct fuse_file_info *fi);
 int pcsfs_mkdir(const char *path, mode_t mode);
+int pcsfs_unlink(const char *path);
+int pcsfs_rmdir(const char *path);
+
 #endif

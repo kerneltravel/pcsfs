@@ -248,6 +248,65 @@ REQUEST:
 	}
 }
 
+int pcs_rm(const char *path)
+{
+	char *url;
+	char *escaped_path;
+	CURL *curl;
+	CURLcode res;
+	struct pcs_curl_buf buf;
+
+	buf.size = 0;
+	buf.buf = malloc(1);
+	url = malloc(URL_MAXLEN);
+	
+	curl = curl_easy_init();
+	if(curl){
+		int ret;
+		int retry_time = 0;
+		
+REQUEST:
+		escaped_path = curl_easy_escape(curl, path, strlen(path));
+		snprintf(url, URL_MAXLEN, "%s?method=%s&access_token=%s&path=%s", 
+				PCS_FILE_OP, PCS_FILE_OP_DELETE, conf.access_token, escaped_path);
+		curl_free(escaped_path);
+		curl_easy_setopt(curl, CURLOPT_URL, url);
+		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, pcs_write_callback);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&buf);
+		curl_easy_setopt(curl, CURLOPT_HTTPPOST, NULL);
+		res = curl_easy_perform(curl);
+		if(res != CURLE_OK){
+			fprintf(stderr, "delete error: %s\n", 
+					curl_easy_strerror(res));
+		}
+		printf("%s\n", buf.buf);
+		ret = parse_json_result(buf.buf);
+		free(buf.buf);
+		if(ret)
+		{
+			retry_time ++;
+			if(retry_time > MAX_RETRY_TIMES || ret != 2){
+				free(url);
+				curl_easy_cleanup(curl);
+				return 1;
+			}else{
+				pcs_refresh_token();
+				buf.size = 0;
+				buf.buf = malloc(1);
+				goto REQUEST;
+			}
+		}
+		curl_easy_cleanup(curl);
+		free(url);
+		return 0;
+	}else{
+		free(url);
+		perror("curl init error!\n");
+		return 1;
+	}
+
+}
 
 #define handle_error() do{\
 	if (!result_obj){\
