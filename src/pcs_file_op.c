@@ -7,11 +7,11 @@
 #include "pcs.h"
 
 
-static int parse_json_mkdir_result(const char* result);
+static int parse_json_result(const char* result);
 static int parse_json_stat_result(const char* result, struct pcs_stat_t *st);
 static int parse_json_lsdir_result(const char* result, struct pcs_stat_t **st, size_t *nmemb);
 
-int pcs_mkdir(char *path)
+int pcs_mkdir(const char *path)
 {
 	char *url;
 	char *escaped_path;
@@ -37,14 +37,14 @@ REQUEST:
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, pcs_write_callback);
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&buf);
-		curl_easy_setopt(curl, CURLOPT_POST, 1);
+		curl_easy_setopt(curl, CURLOPT_HTTPPOST, NULL);
 		res = curl_easy_perform(curl);
 		if(res != CURLE_OK){
 			fprintf(stderr, "mkdir error: %s\n", 
 					curl_easy_strerror(res));
 		}
 		printf("%s\n", buf.buf);
-		ret = parse_json_mkdir_result(buf.buf);
+		ret = parse_json_result(buf.buf);
 		free(buf.buf);
 		if(ret)
 		{
@@ -70,7 +70,7 @@ REQUEST:
 	}
 }
 
-int pcs_stat(char *path, struct pcs_stat_t *st)
+int pcs_stat(const char *path, struct pcs_stat_t *st)
 {
 	char *url;
 	char *escaped_path;
@@ -128,7 +128,7 @@ REQUEST:
 	}
 }
 
-int pcs_lsdir(char *path, struct pcs_stat_t **st, size_t* nmemb)
+int pcs_lsdir(const char *path, struct pcs_stat_t **st, size_t* nmemb)
 {
 	char *url;
 	char *escaped_path;
@@ -186,6 +186,68 @@ REQUEST:
 	}
 }
 
+int pcs_mv(const char *from, const char *to)
+{
+	char *url;
+	char *escaped_from, *escaped_to;
+	CURL *curl;
+	CURLcode res;
+	struct pcs_curl_buf buf;
+
+	buf.size = 0;
+	buf.buf = malloc(1);
+	url = malloc(URL_MAXLEN);
+	
+	curl = curl_easy_init();
+	if(curl){
+		int ret;
+		int retry_time = 0;
+		
+REQUEST:
+		escaped_from = curl_easy_escape(curl, from, strlen(from));
+		escaped_to = curl_easy_escape(curl, to, strlen(to));
+		snprintf(url, URL_MAXLEN, "%s?method=%s&from=%s&to=%s&access_token=%s", 
+				PCS_FILE_OP, PCS_FILE_OP_MOVE, escaped_from, 
+				escaped_to, conf->access_token);
+		curl_free(escaped_from);
+		curl_free(escaped_to);
+		curl_easy_setopt(curl, CURLOPT_URL, url);
+		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, pcs_write_callback);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&buf);
+		curl_easy_setopt(curl, CURLOPT_HTTPPOST, NULL);
+		res = curl_easy_perform(curl);
+		if(res != CURLE_OK){
+			fprintf(stderr, "mv error: %s\n", 
+					curl_easy_strerror(res));
+		}
+		printf("%s\n", buf.buf);
+		ret = parse_json_result(buf.buf);
+		free(buf.buf);
+		if(ret)
+		{
+			retry_time ++;
+			if(retry_time > MAX_RETRY_TIMES || ret != 2){
+				free(url);
+				curl_easy_cleanup(curl);
+				return 1;
+			}else{
+				pcs_refresh_token();
+				buf.size = 0;
+				buf.buf = malloc(1);
+				goto REQUEST;
+			}
+		}
+		curl_easy_cleanup(curl);
+		free(url);
+		return 0;
+	}else{
+		free(url);
+		perror("curl init error!\n");
+		return 1;
+	}
+}
+
 
 #define handle_error() do{\
 	if (!result_obj){\
@@ -200,7 +262,7 @@ REQUEST:
 } while(0)
 
 
-static int parse_json_mkdir_result(const char* result)
+static int parse_json_result(const char* result)
 {
 	struct json_object *result_obj;
 	int errcode;

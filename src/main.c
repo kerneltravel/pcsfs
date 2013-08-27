@@ -71,7 +71,7 @@ int main(int argc, char **argv)
 	{
 		struct pcs_stat_t *st;
 		size_t nmemb;
-		pcs_lsdir("/apps/fuse_pcs/test", &st, &nmemb);
+		pcs_mv("/apps/fuse_pcs/test/n1570.pdf", "/apps/fuse_pcs/test/c11.pdf");
 	}
 	free(conf);
 	return 0;
