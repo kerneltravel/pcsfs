@@ -31,7 +31,7 @@ int pcs_mkdir(const char *path)
 REQUEST:
 		escaped_path = curl_easy_escape(curl, path, strlen(path));
 		snprintf(url, URL_MAXLEN, "%s?method=%s&access_token=%s&path=%s", 
-				PCS_FILE_OP, PCS_FILE_OP_MKDIR, conf->access_token, escaped_path);
+				PCS_FILE_OP, PCS_FILE_OP_MKDIR, conf.access_token, escaped_path);
 		curl_free(escaped_path);
 		curl_easy_setopt(curl, CURLOPT_URL, url);
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
@@ -90,7 +90,7 @@ int pcs_stat(const char *path, struct pcs_stat_t *st)
 REQUEST:
 		escaped_path = curl_easy_escape(curl, path, strlen(path));
 		snprintf(url, URL_MAXLEN, "%s?method=%s&access_token=%s&path=%s", 
-				PCS_FILE_OP, PCS_FILE_OP_STAT, conf->access_token, escaped_path);
+				PCS_FILE_OP, PCS_FILE_OP_STAT, conf.access_token, escaped_path);
 		curl_free(escaped_path);
 		curl_easy_setopt(curl, CURLOPT_URL, url);
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
@@ -148,7 +148,7 @@ int pcs_lsdir(const char *path, struct pcs_stat_t **st, size_t* nmemb)
 REQUEST:
 		escaped_path = curl_easy_escape(curl, path, strlen(path));
 		snprintf(url, URL_MAXLEN, "%s?method=%s&access_token=%s&path=%s", 
-				PCS_FILE_OP, PCS_FILE_OP_LIST, conf->access_token, escaped_path);
+				PCS_FILE_OP, PCS_FILE_OP_LIST, conf.access_token, escaped_path);
 		curl_free(escaped_path);
 		curl_easy_setopt(curl, CURLOPT_URL, url);
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
@@ -208,7 +208,7 @@ REQUEST:
 		escaped_to = curl_easy_escape(curl, to, strlen(to));
 		snprintf(url, URL_MAXLEN, "%s?method=%s&from=%s&to=%s&access_token=%s", 
 				PCS_FILE_OP, PCS_FILE_OP_MOVE, escaped_from, 
-				escaped_to, conf->access_token);
+				escaped_to, conf.access_token);
 		curl_free(escaped_from);
 		curl_free(escaped_to);
 		curl_easy_setopt(curl, CURLOPT_URL, url);

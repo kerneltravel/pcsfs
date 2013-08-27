@@ -30,7 +30,7 @@ struct pcs_quota_t* pcs_get_quota(void)
 		quota = calloc(1, sizeof(struct pcs_quota_t));
 REQUEST:
 		snprintf(url, URL_MAXLEN, "%s?method=info&access_token=%s", 
-				PCS_GET_QUOTA, conf->access_token);
+				PCS_GET_QUOTA, conf.access_token);
 		curl_easy_setopt(curl, CURLOPT_URL, url);
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, pcs_write_callback);

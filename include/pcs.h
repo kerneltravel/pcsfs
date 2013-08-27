@@ -3,6 +3,8 @@
 
 #include <stdlib.h>
 #include <json.h>
+#include <sys/stat.h>
+#include <fuse.h>
 
 #define URL_MAXLEN 1024
 #define PATH_MAXLEN 1024
@@ -33,6 +35,8 @@
 #define META_ISDIR_KEY "isdir"
 #define META_HASSUBDIR_KEY "ifhassubdir"
 
+#define PCS_PATH_PREFIX "/apps/fuse_pcs"
+
 struct pcs_t
 {
 	const char *access_token;
@@ -54,7 +58,6 @@ struct pcs_quota_t
 
 struct pcs_stat_t
 {
-	struct list_head *list;
 	char path[PATH_MAXLEN];
 	unsigned int ctime;
 	unsigned int mtime;
@@ -64,7 +67,7 @@ struct pcs_stat_t
 };
 
 
-extern struct pcs_t *conf;
+extern struct pcs_t conf;
 
 size_t pcs_write_callback(void *contents, size_t size, size_t nmemb, void * userp);
 
@@ -79,5 +82,10 @@ int pcs_mkdir(const char *path);
 int pcs_stat(const char *path, struct pcs_stat_t *st);
 int pcs_lsdir(const char *path, struct pcs_stat_t **st, size_t* nmemb);
 int pcs_mv(const char *from, const char *to);
+
+int pcs_getattr(const char *path, struct stat *stbuf);
+int pcs_opendir(const char *path, struct fuse_file_info *fi);
+int pcs_readdir(const char *path, void *buf, fuse_fill_dir_t filler, 
+		off_t offset, struct fuse_file_info *fi);
 
 #endif

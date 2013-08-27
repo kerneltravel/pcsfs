@@ -6,19 +6,37 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
+#include <fuse.h>
 
 #include "pcs.h"
 
 #define ARG_FORMAT "a:r:h"
 
-struct pcs_t *conf = NULL;
+struct pcs_t conf;
+
+static struct fuse_operations pcs_handler = {
+	.getattr	= pcs_getattr,
+	.opendir	= pcs_opendir,
+	.readdir	= pcs_readdir,
+	.mkdir		= NULL,
+	.unlink		= NULL,
+	.rmdir		= NULL,
+	.rename		= NULL,
+	.link		= NULL,
+	.truncate	= NULL,
+	.create		= NULL,
+	.open		= NULL,
+	.read		= NULL,
+	.write		= NULL,
+	.flush		= NULL,
+	.release	= NULL,
+};
 
 static void usage(char *argv0, int status)
 {
 	fprintf(stderr,
 		"usage: %s -a access_token -r refresh_token mountpoint\n",
 		argv0);
-	free(conf);
 	exit(status);
 }
 
@@ -32,10 +50,10 @@ static void parse_arg(int argc, char **argv)
 	while ((ch = getopt(argc, argv, ARG_FORMAT)) != -1) {
 		switch (ch) {
 		case 'a':
-			conf->access_token = strdup(optarg);
+			conf.access_token = strdup(optarg);
 			break;
 		case 'r':
-			conf->refresh_token = strdup(optarg);
+			conf.refresh_token = strdup(optarg);
 			break;
 		case 'h':
 			usage(argv[0], EXIT_SUCCESS);
@@ -44,35 +62,22 @@ static void parse_arg(int argc, char **argv)
 			usage(argv[0], EXIT_FAILURE);
 		}
 	}
-	if (!conf->access_token || !conf->refresh_token) {
+	if (!conf.access_token || !conf.refresh_token) {
 		usage(argv[0], EXIT_FAILURE);
 	}
 	if (argc - optind != 1) {
 		usage(argv[0], EXIT_FAILURE);
 	}
-	conf->mount_point = argv[optind];
+	conf.mount_point = argv[optind];
 }
 
 int main(int argc, char **argv)
 {
 	int ret;
-/*	
- 	extern int errno;
-	if((ret = daemon(1, 1)) == -1){
-		perror(strerror(errno));
-	}
-*/
-	conf = calloc(1, sizeof(struct pcs_t));
-	if (!conf) {
-		perror("no memory!\n");
-		exit(EXIT_FAILURE);
-	}
+	struct fuse_args fargs = FUSE_ARGS_INIT(0, NULL);
+	memset(&conf, 0, sizeof(struct pcs_t));
 	parse_arg(argc, argv);
-	{
-		struct pcs_stat_t *st;
-		size_t nmemb;
-		pcs_mv("/apps/fuse_pcs/test/n1570.pdf", "/apps/fuse_pcs/test/c11.pdf");
-	}
-	free(conf);
-	return 0;
+	fuse_opt_add_arg(&fargs, argv[0]);
+	fuse_opt_add_arg(&fargs, conf.mount_point);
+	return fuse_main(fargs.argc, fargs.argv, &pcs_handler, NULL);
 }

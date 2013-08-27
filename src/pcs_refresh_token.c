@@ -21,7 +21,7 @@ int pcs_refresh_token(void)
 	url = malloc(URL_MAXLEN);
 	snprintf(url, URL_MAXLEN,
 			"%s?grant_type=refresh_token&refresh_token=%s&client_id=%s&client_secret=%s",
-			PCS_REFRESH_TOKEN, conf->refresh_token, PCS_CLIENT_ID,
+			PCS_REFRESH_TOKEN, conf.refresh_token, PCS_CLIENT_ID,
 			PCS_CLIENT_SECRET);
 	curl = curl_easy_init();
 	if(curl){
@@ -66,10 +66,10 @@ static int parse_json_result(const char* result)
 		return 1;
 	}
 
-	free((void *)conf->access_token);
-	conf->access_token = get_json_str(result_obj, ACCESS_TOKEN_KEY);
-	free((void *)conf->refresh_token);
-	conf->refresh_token = get_json_str(result_obj, REFRESH_TOKEN_KEY);
+	free((void *)conf.access_token);
+	conf.access_token = get_json_str(result_obj, ACCESS_TOKEN_KEY);
+	free((void *)conf.refresh_token);
+	conf.refresh_token = get_json_str(result_obj, REFRESH_TOKEN_KEY);
 
 	json_object_put(result_obj);
 	return 0;
