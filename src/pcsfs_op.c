@@ -108,3 +108,11 @@ int pcsfs_rmdir(const char *path)
 	snprintf(pcs_path, URL_MAXLEN, "%s%s", PCS_PATH_PREFIX, path);
 	return pcs_rm(pcs_path);
 }
+
+int pcsfs_rename(const char *from, const char *to)
+{
+	char pcs_from[URL_MAXLEN], pcs_to[URL_MAXLEN];
+	snprintf(pcs_from, URL_MAXLEN, "%s%s", PCS_PATH_PREFIX, from);
+	snprintf(pcs_to, URL_MAXLEN, "%s%s", PCS_PATH_PREFIX, to);
+	return pcs_mv(pcs_from, pcs_to);
+}

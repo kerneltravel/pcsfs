@@ -92,5 +92,5 @@ int pcsfs_readdir(const char *path, void *buf, fuse_fill_dir_t filler,
 int pcsfs_mkdir(const char *path, mode_t mode);
 int pcsfs_unlink(const char *path);
 int pcsfs_rmdir(const char *path);
-
+int pcsfs_rename(const char *from, const char *to);
 #endif
