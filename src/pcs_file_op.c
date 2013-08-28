@@ -32,6 +32,7 @@ int pcs_mkdir(const char *path)
 		snprintf(url, URL_MAXLEN,
 			 "%s?method=%s&access_token=%s&path=%s", PCS_FILE_OP,
 			 PCS_FILE_OP_MKDIR, conf.access_token, escaped_path);
+		debugf("mkdir_url:%s\n", url);
 		curl_free(escaped_path);
 		curl_easy_setopt(curl, CURLOPT_URL, url);
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
@@ -41,8 +42,7 @@ int pcs_mkdir(const char *path)
 		curl_easy_setopt(curl, CURLOPT_HTTPPOST, NULL);
 		res = curl_easy_perform(curl);
 		if (res != CURLE_OK) {
-			debugf("mkdir error: %s\n",
-				curl_easy_strerror(res));
+			debugf("mkdir error: %s\n", curl_easy_strerror(res));
 		}
 		debugf("%s\n", buf.buf);
 		ret = parse_json_result(buf.buf);
@@ -88,6 +88,7 @@ int pcs_stat(const char *path, struct pcs_stat_t *st)
 		snprintf(url, URL_MAXLEN,
 			 "%s?method=%s&access_token=%s&path=%s", PCS_FILE_OP,
 			 PCS_FILE_OP_STAT, conf.access_token, escaped_path);
+		debugf("stat_url:%s\n", url);
 		curl_free(escaped_path);
 		curl_easy_setopt(curl, CURLOPT_URL, url);
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
@@ -96,11 +97,11 @@ int pcs_stat(const char *path, struct pcs_stat_t *st)
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&buf);
 		res = curl_easy_perform(curl);
 		if (res != CURLE_OK) {
-			debugf("stat error: %s\n",
-				curl_easy_strerror(res));
+			debugf("stat error: %s\n", curl_easy_strerror(res));
 		}
 		debugf("%s\n", buf.buf);
 		ret = parse_json_stat_result(buf.buf, st);
+		debugf("return value:%d\n", ret);
 		free(buf.buf);
 		if (ret) {
 			retry_time++;
@@ -143,6 +144,7 @@ int pcs_lsdir(const char *path, struct pcs_stat_t **st, size_t * nmemb)
 		snprintf(url, URL_MAXLEN,
 			 "%s?method=%s&access_token=%s&path=%s", PCS_FILE_OP,
 			 PCS_FILE_OP_LIST, conf.access_token, escaped_path);
+		debugf("lsdir_url:%s\n", url);
 		curl_free(escaped_path);
 		curl_easy_setopt(curl, CURLOPT_URL, url);
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
@@ -151,8 +153,7 @@ int pcs_lsdir(const char *path, struct pcs_stat_t **st, size_t * nmemb)
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&buf);
 		res = curl_easy_perform(curl);
 		if (res != CURLE_OK) {
-			debugf("stat error: %s\n",
-				curl_easy_strerror(res));
+			debugf("stat error: %s\n", curl_easy_strerror(res));
 		}
 		debugf("%s\n", buf.buf);
 		ret = parse_json_lsdir_result(buf.buf, st, nmemb);
@@ -200,6 +201,7 @@ int pcs_mv(const char *from, const char *to)
 			 "%s?method=%s&from=%s&to=%s&access_token=%s",
 			 PCS_FILE_OP, PCS_FILE_OP_MOVE, escaped_from,
 			 escaped_to, conf.access_token);
+		debugf("mv_url:%s\n", url);
 		curl_free(escaped_from);
 		curl_free(escaped_to);
 		curl_easy_setopt(curl, CURLOPT_URL, url);
@@ -210,8 +212,7 @@ int pcs_mv(const char *from, const char *to)
 		curl_easy_setopt(curl, CURLOPT_HTTPPOST, NULL);
 		res = curl_easy_perform(curl);
 		if (res != CURLE_OK) {
-			debugf("mv error: %s\n",
-				curl_easy_strerror(res));
+			debugf("mv error: %s\n", curl_easy_strerror(res));
 		}
 		debugf("%s\n", buf.buf);
 		ret = parse_json_result(buf.buf);
@@ -257,6 +258,7 @@ int pcs_rm(const char *path)
 		snprintf(url, URL_MAXLEN,
 			 "%s?method=%s&access_token=%s&path=%s", PCS_FILE_OP,
 			 PCS_FILE_OP_DELETE, conf.access_token, escaped_path);
+		debugf("rm_url:%s\n", url);
 		curl_free(escaped_path);
 		curl_easy_setopt(curl, CURLOPT_URL, url);
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
@@ -266,8 +268,7 @@ int pcs_rm(const char *path)
 		curl_easy_setopt(curl, CURLOPT_HTTPPOST, NULL);
 		res = curl_easy_perform(curl);
 		if (res != CURLE_OK) {
-			debugf("delete error: %s\n",
-				curl_easy_strerror(res));
+			debugf("delete error: %s\n", curl_easy_strerror(res));
 		}
 		debugf("%s\n", buf.buf);
 		ret = parse_json_result(buf.buf);
@@ -319,7 +320,7 @@ int pcs_download(const char *path, const char *range, char *outbuf,
 			 "%s?method=%s&access_token=%s&path=%s",
 			 PCS_FILE_DOWNLOAD, PCS_FILE_OP_DOWNLOAD,
 			 conf.access_token, escaped_path);
-		debugf("%s", url);
+		debugf("download_url:%s\n", url);
 		curl_free(escaped_path);
 		curl_easy_setopt(curl, CURLOPT_URL, url);
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
@@ -329,8 +330,7 @@ int pcs_download(const char *path, const char *range, char *outbuf,
 		curl_easy_setopt(curl, CURLOPT_RANGE, range);
 		res = curl_easy_perform(curl);
 		if (res != CURLE_OK) {
-			debugf("download error: %s\n",
-				curl_easy_strerror(res));
+			debugf("download error: %s\n", curl_easy_strerror(res));
 			return 1;
 		}
 		curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
@@ -370,15 +370,84 @@ int pcs_download(const char *path, const char *range, char *outbuf,
 
 }
 
+int pcs_upload(const char *path, const char *inbuf, size_t size)
+{
+	char url[URL_MAXLEN];
+	char *escaped_path;
+	CURL *curl;
+	CURLcode res;
+	struct pcs_curl_buf buf;
+	struct curl_httppost *post = NULL;
+	struct curl_httppost *last = NULL;
+
+	buf.size = 0;
+	buf.buf = malloc(1);
+
+	curl = curl_easy_init();
+	if (curl) {
+		int ret;
+		int retry_time = 0;
+
+ REQUEST:
+		escaped_path = curl_easy_escape(curl, path, strlen(path));
+		snprintf(url, URL_MAXLEN,
+			 "%s?method=%s&access_token=%s&path=%s",
+			 PCS_FILE_UPLOAD, PCS_FILE_OP_UPLOAD, conf.access_token,
+			 escaped_path);
+		debugf("upload_url:%s\n", url);
+		curl_free(escaped_path);
+		curl_formadd(&post, &last,
+			     CURLFORM_COPYNAME, "file",
+			     CURLFORM_PTRCONTENTS, inbuf,
+			     CURLFORM_CONTENTSLENGTH, size, CURLFORM_END);
+		curl_easy_setopt(curl, CURLOPT_URL, url);
+		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION,
+				 pcs_write_callback);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&buf);
+		curl_easy_setopt(curl, CURLOPT_HTTPPOST, post);
+		res = curl_easy_perform(curl);
+		curl_formfree(post);
+		if (res != CURLE_OK) {
+			debugf("upload error: %s\n", curl_easy_strerror(res));
+		}
+		debugf("%s\n", buf.buf);
+		ret = parse_json_result(buf.buf);
+		free(buf.buf);
+		if (ret) {
+			retry_time++;
+			if (retry_time > MAX_RETRY_TIMES || ret != 2) {
+				curl_easy_cleanup(curl);
+				return 1;
+			} else {
+				pcs_refresh_token();
+				buf.size = 0;
+				buf.buf = malloc(1);
+				goto REQUEST;
+			}
+		}
+		curl_easy_cleanup(curl);
+		return 0;
+	} else {
+		perror("curl init error!\n");
+		return 1;
+	}
+
+}
+
 #define handle_error() do{\
 	if (!result_obj){\
-		perror("parse json object error!\n");\
+		debugf("parse json object error!\n");\
 		return 1;\
 	}\
 	errcode = get_json_int(result_obj, ERROR_CODE_KEY);\
+	debugf("error_code:%d\n",errcode);\
 	if( errcode == ERROR_INVALID_ACCESS_TOKEN){\
 		json_object_put(result_obj);\
 		return 2;\
+	}else if(errcode != 0){\
+		json_object_put(result_obj);\
+		return 1;\
 	}\
 } while(0)
 
@@ -442,7 +511,7 @@ static int parse_json_lsdir_result(const char *result, struct pcs_stat_t **st,
 	int errcode;
 	struct json_object *list;
 	int i;
-	
+
 	result_obj = json_tokener_parse(result);
 	handle_error();
 	list = json_object_object_get(result_obj, "list");

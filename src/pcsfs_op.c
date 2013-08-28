@@ -130,6 +130,7 @@ int pcsfs_statfs(const char *path, struct statvfs *stvfs)
 	stvfs->f_frsize = 1;
 	stvfs->f_blocks = quota.total;
 	stvfs->f_bfree = quota.total - quota.used;
+	stvfs->f_bavail = quota.total - quota.used;
 	return 0;
 }
 
@@ -139,6 +140,7 @@ int pcsfs_open(const char *path, struct fuse_file_info *fi)
 	struct pcs_stat_t st;
 	int ret;
 
+	fi->nonseekable = 1;
 	snprintf(pcs_path, URL_MAXLEN, "%s%s", PCS_PATH_PREFIX, path);
 	memset(&st, 0, sizeof(struct pcs_stat_t));
 	ret = pcs_stat(pcs_path, &st);
@@ -147,6 +149,7 @@ int pcsfs_open(const char *path, struct fuse_file_info *fi)
 	} else {
 		return 0;
 	}
+	return 0;
 }
 
 int pcsfs_read(const char *path, char *buf, size_t size, off_t offset,
@@ -158,12 +161,32 @@ int pcsfs_read(const char *path, char *buf, size_t size, off_t offset,
 	size_t read_size = size;
 
 	snprintf(pcs_path, URL_MAXLEN, "%s%s", PCS_PATH_PREFIX, path);
-	snprintf(pcs_range, URL_MAXLEN, "%ld-%ld", offset,
-		 offset + size - 1);
+	snprintf(pcs_range, URL_MAXLEN, "%ld-%ld", offset, offset + size - 1);
 	ret = pcs_download(pcs_path, pcs_range, buf, &read_size);
 	if (ret) {
 		return -1;
 	} else {
 		return read_size;
 	}
+}
+
+int pcsfs_write(const char *path, const char *buf, size_t size,
+		off_t offset, struct fuse_file_info *fi)
+{
+	char pcs_path[URL_MAXLEN];
+	int ret;
+	debugf("--------------write\n");
+	snprintf(pcs_path, URL_MAXLEN, "%s%s", PCS_PATH_PREFIX, path);
+	ret = pcs_upload(pcs_path, buf, size);
+	if (ret) {
+		return -1;
+	} else {
+		return size;
+	}
+}
+
+int pcsfs_create(const char *path, mode_t mode, struct fuse_file_info *fi)
+{
+	debugf("--------------create\n");
+	return 0;
 }

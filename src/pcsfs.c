@@ -25,7 +25,8 @@ static struct fuse_operations pcsfs_handler = {
 	.statfs = pcsfs_statfs,
 	.open = pcsfs_open,
 	.read = pcsfs_read,
-	.write = NULL,
+	.write = pcsfs_write,
+	.create = pcsfs_create,
 };
 
 static void usage(char *argv0, int status)

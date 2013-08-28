@@ -32,7 +32,7 @@ int pcs_refresh_token(void)
 		res = curl_easy_perform(curl);
 		if (res != CURLE_OK) {
 			debugf("refresh token error: %s\n",
-				curl_easy_strerror(res));
+			       curl_easy_strerror(res));
 		}
 		curl_easy_cleanup(curl);
 		debugf("%s\n", buf.buf);

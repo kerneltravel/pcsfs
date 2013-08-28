@@ -34,7 +34,7 @@ int pcs_get_quota(struct pcs_quota_t *quota)
 		res = curl_easy_perform(curl);
 		if (res != CURLE_OK) {
 			debugf("get quota error: %s\n",
-				curl_easy_strerror(res));
+			       curl_easy_strerror(res));
 		}
 		debugf("%s\n", buf.buf);
 		ret = parse_json_result(buf.buf, quota);

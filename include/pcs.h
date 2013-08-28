@@ -18,6 +18,7 @@
 #define PCS_GET_QUOTA "https://pcs.baidu.com/rest/2.0/pcs/quota"
 #define PCS_FILE_OP "https://pcs.baidu.com/rest/2.0/pcs/file"
 #define PCS_FILE_DOWNLOAD "https://d.pcs.baidu.com/rest/2.0/pcs/file"
+#define PCS_FILE_UPLOAD "https://c.pcs.baidu.com/rest/2.0/pcs/file"
 
 #define PCS_FILE_OP_MKDIR "mkdir"
 #define PCS_FILE_OP_STAT "meta"
@@ -25,6 +26,7 @@
 #define PCS_FILE_OP_MOVE "move"
 #define PCS_FILE_OP_DELETE "delete"
 #define PCS_FILE_OP_DOWNLOAD "download"
+#define PCS_FILE_OP_UPLOAD "upload"
 
 #define ERROR_CODE_KEY "error_code"
 #define ACCESS_TOKEN_KEY "access_token"
@@ -89,6 +91,7 @@ int pcs_lsdir(const char *path, struct pcs_stat_t **st, size_t* nmemb);
 int pcs_mv(const char *from, const char *to);
 int pcs_rm(const char *path);
 int pcs_download(const char *path, const char *range, char *outbuf, size_t *size);
+int pcs_upload(const char *path, const char* inbuf, size_t size);
 
 int pcsfs_getattr(const char *path, struct stat *stbuf);
 int pcsfs_opendir(const char *path, struct fuse_file_info *fi);
@@ -102,4 +105,7 @@ int pcsfs_statfs(const char *path, struct statvfs *stvfs);
 int pcsfs_open(const char *path, struct fuse_file_info *fi);
 int pcsfs_read(const char *path, char *buf, size_t size, off_t offset,
 		struct fuse_file_info *fi);
+int pcsfs_write(const char *path, const char *buf, size_t size,
+		off_t offset, struct fuse_file_info *fi);
+int pcsfs_create(const char *path, mode_t mode, struct fuse_file_info *fi);
 #endif

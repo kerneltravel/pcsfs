@@ -13,7 +13,7 @@ void debugf(const char *s, ...)
 	/* Time to size the string by vfprint'ing it to /dev/null... */
 	FILE *errfile;
 	va_list ap;
-	
+
 	errfile = fopen(LOGFILE, "a");
 	va_start(ap, s);
 	vfprintf(errfile, s, ap);
