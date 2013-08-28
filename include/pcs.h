@@ -17,12 +17,14 @@
 #define PCS_REFRESH_TOKEN "https://openapi.baidu.com/oauth/2.0/token"
 #define PCS_GET_QUOTA "https://pcs.baidu.com/rest/2.0/pcs/quota"
 #define PCS_FILE_OP "https://pcs.baidu.com/rest/2.0/pcs/file"
+#define PCS_FILE_DOWNLOAD "https://d.pcs.baidu.com/rest/2.0/pcs/file"
 
 #define PCS_FILE_OP_MKDIR "mkdir"
 #define PCS_FILE_OP_STAT "meta"
 #define PCS_FILE_OP_LIST "list"
 #define PCS_FILE_OP_MOVE "move"
 #define PCS_FILE_OP_DELETE "delete"
+#define PCS_FILE_OP_DOWNLOAD "download"
 
 #define ERROR_CODE_KEY "error_code"
 #define ACCESS_TOKEN_KEY "access_token"
@@ -70,6 +72,8 @@ struct pcs_stat_t
 
 extern struct pcs_t conf;
 
+void debugf(const char *s, ...);
+
 size_t pcs_write_callback(void *contents, size_t size, size_t nmemb, void * userp);
 
 char* get_json_str(struct json_object *jobj, const char *key);
@@ -84,6 +88,7 @@ int pcs_stat(const char *path, struct pcs_stat_t *st);
 int pcs_lsdir(const char *path, struct pcs_stat_t **st, size_t* nmemb);
 int pcs_mv(const char *from, const char *to);
 int pcs_rm(const char *path);
+int pcs_download(const char *path, const char *range, char *outbuf, size_t *size);
 
 int pcsfs_getattr(const char *path, struct stat *stbuf);
 int pcsfs_opendir(const char *path, struct fuse_file_info *fi);
@@ -94,4 +99,7 @@ int pcsfs_unlink(const char *path);
 int pcsfs_rmdir(const char *path);
 int pcsfs_rename(const char *from, const char *to);
 int pcsfs_statfs(const char *path, struct statvfs *stvfs);
+int pcsfs_open(const char *path, struct fuse_file_info *fi);
+int pcsfs_read(const char *path, char *buf, size_t size, off_t offset,
+		struct fuse_file_info *fi);
 #endif

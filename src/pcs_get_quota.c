@@ -10,14 +10,13 @@ static int parse_json_result(const char *result, struct pcs_quota_t *quota);
 
 int pcs_get_quota(struct pcs_quota_t *quota)
 {
-	char *url;
+	char url[URL_MAXLEN];
 	CURL *curl;
 	CURLcode res;
 	struct pcs_curl_buf buf;
 
 	buf.size = 0;
 	buf.buf = malloc(1);
-	url = malloc(URL_MAXLEN);
 
 	curl = curl_easy_init();
 	if (curl) {
@@ -34,16 +33,15 @@ int pcs_get_quota(struct pcs_quota_t *quota)
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&buf);
 		res = curl_easy_perform(curl);
 		if (res != CURLE_OK) {
-			fprintf(stderr, "get quota error: %s\n",
+			debugf("get quota error: %s\n",
 				curl_easy_strerror(res));
 		}
-		printf("%s\n", buf.buf);
+		debugf("%s\n", buf.buf);
 		ret = parse_json_result(buf.buf, quota);
 		free(buf.buf);
 		if (ret) {
 			retry_time++;
 			if (retry_time > MAX_RETRY_TIMES || ret != 2) {
-				free(url);
 				curl_easy_cleanup(curl);
 				return 1;
 			} else {
@@ -54,10 +52,8 @@ int pcs_get_quota(struct pcs_quota_t *quota)
 			}
 		}
 		curl_easy_cleanup(curl);
-		free(url);
 		return 0;
 	} else {
-		free(url);
 		perror("curl init error!\n");
 		return 1;
 	}

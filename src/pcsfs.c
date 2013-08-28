@@ -23,8 +23,8 @@ static struct fuse_operations pcsfs_handler = {
 	.rmdir = pcsfs_rmdir,
 	.rename = pcsfs_rename,
 	.statfs = pcsfs_statfs,
-	.open = NULL,
-	.read = NULL,
+	.open = pcsfs_open,
+	.read = pcsfs_read,
 	.write = NULL,
 };
 

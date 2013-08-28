@@ -10,14 +10,13 @@ static int parse_json_result(const char *result);
 
 int pcs_refresh_token(void)
 {
-	char *url;
+	char url[URL_MAXLEN];
 	CURL *curl;
 	CURLcode res;
 	struct pcs_curl_buf buf;
 
 	buf.size = 0;
 	buf.buf = malloc(1);
-	url = malloc(URL_MAXLEN);
 	snprintf(url, URL_MAXLEN,
 		 "%s?grant_type=refresh_token&refresh_token=%s&client_id=%s&client_secret=%s",
 		 PCS_REFRESH_TOKEN, conf.refresh_token, PCS_CLIENT_ID,
@@ -32,24 +31,15 @@ int pcs_refresh_token(void)
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&buf);
 		res = curl_easy_perform(curl);
 		if (res != CURLE_OK) {
-			fprintf(stderr, "refresh token error: %s\n",
+			debugf("refresh token error: %s\n",
 				curl_easy_strerror(res));
 		}
 		curl_easy_cleanup(curl);
-#if 1
-		{
-			FILE *fp;
-			fp = fopen("/tmp/aaaa", "w");
-			fprintf(fp, "%s\n", buf.buf);
-			fclose(fp);
-		}
-#endif
-		free(url);
+		debugf("%s\n", buf.buf);
 		ret = parse_json_result(buf.buf);
 		free(buf.buf);
 		return ret;
 	} else {
-		free(url);
 		perror("curl init error!\n");
 		return 1;
 	}
