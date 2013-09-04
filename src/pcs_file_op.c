@@ -3,6 +3,9 @@
 #include <string.h>
 #include <curl/curl.h>
 #include <json.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #include "pcs.h"
 
@@ -373,16 +376,34 @@ int pcs_download(const char *path, const char *range, char *outbuf,
 int pcs_upload(const char *path, const char *inbuf, size_t size)
 {
 	char url[URL_MAXLEN];
+	char tmpfile[] = "tmp_XXXXXX";
 	char *escaped_path;
 	CURL *curl;
 	CURLcode res;
 	struct pcs_curl_buf buf;
 	struct curl_httppost *post = NULL;
 	struct curl_httppost *last = NULL;
+	int tmpfd;
+	size_t has_write = 0;
+	size_t ret;
 
 	buf.size = 0;
 	buf.buf = malloc(1);
-
+	if ((tmpfd = mkstemp(tmpfile)) == -1) {
+		free(buf.buf);
+		return 1;
+	}
+	while (has_write < size) {
+		ret = write(tmpfd, inbuf + has_write, size - has_write);
+		if (ret == -1) {
+			free(buf.buf);
+			close(tmpfd);
+			unlink(tmpfile);
+			return;
+		}
+		has_write += ret;
+	}
+	close(tmpfd);
 	curl = curl_easy_init();
 	if (curl) {
 		int ret;
@@ -391,15 +412,15 @@ int pcs_upload(const char *path, const char *inbuf, size_t size)
  REQUEST:
 		escaped_path = curl_easy_escape(curl, path, strlen(path));
 		snprintf(url, URL_MAXLEN,
-			 "%s?method=%s&access_token=%s&path=%s",
+			 "%s?method=%s&access_token=%s&path=%s&ondup=overwrite",
 			 PCS_FILE_UPLOAD, PCS_FILE_OP_UPLOAD, conf.access_token,
 			 escaped_path);
 		debugf("upload_url:%s\n", url);
 		curl_free(escaped_path);
+
 		curl_formadd(&post, &last,
-			     CURLFORM_COPYNAME, "file",
-			     CURLFORM_PTRCONTENTS, inbuf,
-			     CURLFORM_CONTENTSLENGTH, size, CURLFORM_END);
+			     CURLFORM_PTRNAME, "file",
+			     CURLFORM_FILE, tmpfile, CURLFORM_END);
 		curl_easy_setopt(curl, CURLOPT_URL, url);
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION,
@@ -418,6 +439,7 @@ int pcs_upload(const char *path, const char *inbuf, size_t size)
 			retry_time++;
 			if (retry_time > MAX_RETRY_TIMES || ret != 2) {
 				curl_easy_cleanup(curl);
+				unlink(tmpfile);
 				return 1;
 			} else {
 				pcs_refresh_token();
@@ -427,12 +449,13 @@ int pcs_upload(const char *path, const char *inbuf, size_t size)
 			}
 		}
 		curl_easy_cleanup(curl);
+		unlink(tmpfile);
 		return 0;
 	} else {
 		perror("curl init error!\n");
+		unlink(tmpfile);
 		return 1;
 	}
-
 }
 
 #define handle_error() do{\

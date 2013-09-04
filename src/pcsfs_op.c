@@ -175,7 +175,6 @@ int pcsfs_write(const char *path, const char *buf, size_t size,
 {
 	char pcs_path[URL_MAXLEN];
 	int ret;
-	debugf("--------------write\n");
 	snprintf(pcs_path, URL_MAXLEN, "%s%s", PCS_PATH_PREFIX, path);
 	ret = pcs_upload(pcs_path, buf, size);
 	if (ret) {
@@ -187,6 +186,7 @@ int pcsfs_write(const char *path, const char *buf, size_t size,
 
 int pcsfs_create(const char *path, mode_t mode, struct fuse_file_info *fi)
 {
-	debugf("--------------create\n");
-	return 0;
+	char pcs_path[URL_MAXLEN];
+	snprintf(pcs_path, URL_MAXLEN, "%s%s", PCS_PATH_PREFIX, path);
+	return pcs_upload(pcs_path, NULL, 0);
 }
