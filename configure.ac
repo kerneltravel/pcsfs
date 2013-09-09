@@ -15,6 +15,8 @@ PKG_CHECK_MODULES(JSON, [json], [LIBS="$LIBS $JSON_LIBS" CFLAGS="$CFLAGS $JSON_C
 		  AC_MSG_ERROR(Cannot find JSON: Is json-config in path?))
 PKG_CHECK_MODULES(FUSE, [fuse], [LIBS="$LIBS $FUSE_LIBS" CFLAGS="$CFLAGS $FUSE_CFLAGS -DFUSE_USE_VERSION=26"], 
 		  AC_MSG_ERROR(Cannot find FUSE: Is fuse-config in path?))
+PKG_CHECK_MODULES(OPENSSL, [openssl], [LIBS="$LIBS $OPENSSL_LIBS" CFLAGS="$CFLAGS $OPENSSL_CFLAGS"],
+		  AC_MSG_ERROR(Cannot find OPENSSL: Is openssl-config in path?))
 
 # Checks for header files.
 AC_CHECK_HEADERS([fcntl.h stdlib.h string.h unistd.h])
@@ -25,6 +27,7 @@ AC_TYPE_MODE_T
 AC_TYPE_OFF_T
 
 # Checks for library functions.
+AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([memset strdup strrchr])
