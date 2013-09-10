@@ -5,7 +5,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-
+#include <errno.h>
 #include "pcs.h"
 
 int pcsfs_getattr(const char *path, struct stat *stbuf)
@@ -178,25 +178,58 @@ int pcsfs_write(const char *path, const char *buf, size_t size,
 	char pcs_path[URL_MAXLEN];
 	char localpath[URL_MAXLEN];
 	struct stat st;
+	size_t has_write = 0;
 	int ret;
+	int fd;
+
 	snprintf(pcs_path, URL_MAXLEN, "%s%s", PCS_PATH_PREFIX, path);
-	if(pcs_localpath(pcs_path, localpath, URL_MAXLEN)){
+	if (pcs_localpath(pcs_path, localpath, URL_MAXLEN)) {
 		return -1;
 	}
 	ret = lstat(localpath, &st);
-	if(!ret && S_IFREG(st)){
-		int fd;
-		size_t has_write = 0;
-		if((fd = open(localpath, O_WRONLY)) < 0){
+	if (!ret && S_ISREG(st.st_mode)) {
+		if ((fd = open(localpath, O_WRONLY)) < 0) {
 			return -1;
 		}
 		lseek(fd, offset, SEEK_SET);
-		while(has_write < size){
-			has_write += write(fd, buf + has_write, size - has_write);
+		while (has_write < size) {
+			has_write +=
+			    write(fd, buf + has_write, size - has_write);
 		}
 		close(fd);
-	}else{
-		
+	} else {
+		size_t has_download = 0;
+		struct pcs_stat_t pcs_st;
+		snprintf(pcs_path, URL_MAXLEN, "%s%s", PCS_PATH_PREFIX, path);
+		memset(&pcs_st, 0, sizeof(struct pcs_stat_t));
+		ret = pcs_stat(pcs_path, &pcs_st);
+		if (ret) {
+			return -1;
+		}
+		if ((fd = open(localpath, O_CREAT|O_WRONLY, S_IRUSR|S_IWUSR)) < 0) {
+			return -1;
+		}
+		while (has_download < pcs_st.size) {
+			char read_buf[1024];
+			size_t to_read;
+			size_t buf_has_write = 0;
+			to_read =
+			    pcs_st.size - has_download >
+			    1024 ? 1024 : pcs_st.size - has_download;
+			pcsfs_read(path, read_buf, to_read, has_download, NULL);
+			while (buf_has_write < to_read) {
+				buf_has_write +=
+				    write(fd, read_buf + buf_has_write,
+					  to_read - buf_has_write);
+			}
+			has_download += to_read;
+		}
+		lseek(fd, offset, SEEK_SET);
+		while (has_write < size) {
+			has_write +=
+			    write(fd, buf + has_write, size - has_write);
+		}
+		close(fd);
 	}
 }
 
@@ -206,13 +239,14 @@ int pcsfs_flush(const char *path, struct fuse_file_info *fi)
 	char localpath[URL_MAXLEN];
 	int ret;
 	snprintf(pcs_path, URL_MAXLEN, "%s%s", PCS_PATH_PREFIX, path);
-	if(pcs_localpath(pcs_path, localpath, URL_MAXLEN)){
+	if (pcs_localpath(pcs_path, localpath, URL_MAXLEN)) {
 		return -1;
 	}
 	ret = pcs_upload(pcs_path, localpath);
 	if (ret) {
 		return -1;
 	} else {
+		unlink(localpath);
 		return 0;
 	}
 }
@@ -220,6 +254,20 @@ int pcsfs_flush(const char *path, struct fuse_file_info *fi)
 int pcsfs_create(const char *path, mode_t mode, struct fuse_file_info *fi)
 {
 	char pcs_path[URL_MAXLEN];
+	char localpath[URL_MAXLEN];
+	int fd;
+	debugf("create...............\n");
 	snprintf(pcs_path, URL_MAXLEN, "%s%s", PCS_PATH_PREFIX, path);
-	return pcs_upload(pcs_path, NULL, 0);
+	if (pcs_localpath(pcs_path, localpath, URL_MAXLEN)) {
+		return -1;
+	}
+	debugf("create_tmp_file...%s\n", localpath);
+	if ((fd = open(localpath, O_CREAT|O_WRONLY, S_IRUSR|S_IWUSR)) < 0) {
+		extern int errno;
+		debugf("aaaaaaaa--%s", strerror(errno));
+		return -1;
+	}
+	close(fd);
+	debugf("create_tmp_file...2");
+	return pcs_upload(pcs_path, localpath);
 }

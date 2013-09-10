@@ -93,7 +93,7 @@ PROGRAMS = $(bin_PROGRAMS)
 am_pcsfs_OBJECTS = pcsfs.$(OBJEXT) pcs_debugf.$(OBJEXT) \
 	pcsfs_op.$(OBJEXT) pcs_refresh_token.$(OBJEXT) \
 	pcs_file_op.$(OBJEXT) pcs_get_quota.$(OBJEXT) \
-	pcs_curl.$(OBJEXT) pcs_json.$(OBJEXT)
+	pcs_curl.$(OBJEXT) pcs_json.$(OBJEXT) pcs_localfile.$(OBJEXT)
 pcsfs_OBJECTS = $(am_pcsfs_OBJECTS)
 pcsfs_DEPENDENCIES =
 AM_V_P = $(am__v_P_@AM_V@)
@@ -190,6 +190,8 @@ LTLIBOBJS = @LTLIBOBJS@
 MAKEINFO = @MAKEINFO@
 MKDIR_P = @MKDIR_P@
 OBJEXT = @OBJEXT@
+OPENSSL_CFLAGS = @OPENSSL_CFLAGS@
+OPENSSL_LIBS = @OPENSSL_LIBS@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_NAME = @PACKAGE_NAME@
@@ -249,7 +251,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 pcsfs_LDADD = @LIBCURL@
-pcsfs_SOURCES = pcsfs.c pcs_debugf.c pcsfs_op.c pcs_refresh_token.c pcs_file_op.c pcs_get_quota.c pcs_curl.c pcs_json.c
+pcsfs_SOURCES = pcsfs.c pcs_debugf.c pcsfs_op.c pcs_refresh_token.c pcs_file_op.c pcs_get_quota.c pcs_curl.c pcs_json.c pcs_localfile.c
 all: all-am
 
 .SUFFIXES:
@@ -342,6 +344,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pcs_file_op.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pcs_get_quota.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pcs_json.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pcs_localfile.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pcs_refresh_token.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pcsfs.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pcsfs_op.Po@am__quote@

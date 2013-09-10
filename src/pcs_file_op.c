@@ -21,7 +21,7 @@ int pcs_mkdir(const char *path)
 	CURL *curl;
 	CURLcode res;
 	struct pcs_curl_buf buf;
-	
+
 	buf.size = 0;
 	buf.buf = malloc(1);
 
@@ -373,7 +373,7 @@ int pcs_download(const char *path, const char *range, char *outbuf,
 
 }
 
-int pcs_upload(const char *path, const char* local_path)
+int pcs_upload(const char *path, const char *local_path)
 {
 	char url[URL_MAXLEN];
 	char *escaped_path;
@@ -386,10 +386,10 @@ int pcs_upload(const char *path, const char* local_path)
 	int ret;
 
 	ret = lstat(local_path, &st);
-	if(ret || !S_ISREG(st)){
+	if (ret || !S_ISREG(st.st_mode)) {
 		return 1;
 	}
-	
+
 	buf.size = 0;
 	buf.buf = malloc(1);
 
@@ -428,7 +428,6 @@ int pcs_upload(const char *path, const char* local_path)
 			retry_time++;
 			if (retry_time > MAX_RETRY_TIMES || ret != 2) {
 				curl_easy_cleanup(curl);
-				unlink(tmpfile);
 				return 1;
 			} else {
 				pcs_refresh_token();
@@ -438,11 +437,9 @@ int pcs_upload(const char *path, const char* local_path)
 			}
 		}
 		curl_easy_cleanup(curl);
-		unlink(tmpfile);
 		return 0;
 	} else {
 		perror("curl init error!\n");
-		unlink(tmpfile);
 		return 1;
 	}
 }

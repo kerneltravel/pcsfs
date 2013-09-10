@@ -113,6 +113,10 @@
 /* Defined if libcurl supports TFTP */
 #undef LIBCURL_PROTOCOL_TFTP
 
+/* Define to 1 if `lstat' dereferences a symlink specified with a trailing
+   slash. */
+#undef LSTAT_FOLLOWS_SLASHED_SYMLINK
+
 /* Name of package */
 #undef PACKAGE
 

@@ -114,6 +114,10 @@
 /* Defined if libcurl supports TFTP */
 #define LIBCURL_PROTOCOL_TFTP 1
 
+/* Define to 1 if `lstat' dereferences a symlink specified with a trailing
+   slash. */
+#define LSTAT_FOLLOWS_SLASHED_SYMLINK 1
+
 /* Name of package */
 #define PACKAGE "pcsfs"
 
